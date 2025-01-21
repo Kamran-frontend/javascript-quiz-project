@@ -14,14 +14,39 @@ class Quiz {
   }
 
   moveToNextQuestion() {
-    return (this.currentQuestionIndex += 1);
+    return this.currentQuestionIndex++;
   }
 
   shuffleQuestions() {
     this.questions.sort((a, b) => 0.5 - Math.random());
   }
 
-  // 5. checkAnswer(answer)
+  checkAnswer(answer) {
+    if (this.questions[this.currentQuestionIndex].answer === answer) {
+      this.correctAnswers++;
+    }
+  }
 
-  // 6. hasEnded()
+  hasEnded() {
+    return this.currentQuestionIndex >= this.questions.length;
+  }
+
+  filterQuestionsByDifficulty(difficulty) {
+    if (difficulty > 0 && difficulty <= 3) {
+      this.questions = this.questions.filter(
+        (q) => q.difficulty === difficulty
+      );
+    }
+  }
+
+  averageDifficulty() {
+    if (this.questions.length === 0) {
+      return 0;
+    }
+    const totalDifficulty = this.questions.reduce(
+      (sum, q) => sum + q.difficulty,
+      0
+    );
+    return totalDifficulty / this.questions.length;
+  }
 }
