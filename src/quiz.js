@@ -47,6 +47,7 @@ class Quiz {
       (sum, q) => sum + q.difficulty,
       0
     );
-    return totalDifficulty / this.questions.length;
+    return totalDifficulty / this.questions.length;  
   }
 }
+
