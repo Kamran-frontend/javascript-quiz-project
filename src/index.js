@@ -99,7 +99,24 @@ document.addEventListener("DOMContentLoaded", () => {
     //     }
     //   }, 1000);
     // }
+     
+    let timer = setInterval(function(){
+          quiz.timeRemaining--;
+          const minutes = Math.floor(quiz.timeRemaining / 60)
+          .toString()
+          .padStart(2, "0");
+          const seconds = (quiz.timeRemaining % 60).toString().padStart(2, "0");
+          timeRemainingContainer.innerText = `${minutes}:${seconds}`;
 
+         //console.log(quiz.timeRemaining);
+          if (quiz.timeRemaining === 0) {
+          clearInterval(timer);
+          quizView.style.display = "none";
+          endView.style.display = "block";
+        }
+        }, 1000)
+        
+       
     // Clear the previous question text and question choices
     questionContainer.innerText = "";
     choiceContainer.innerHTML = "";
@@ -235,5 +252,14 @@ document.addEventListener("DOMContentLoaded", () => {
     //   // document.getElementById("quizView").classList.toggle("none");
     //   // showQuestion();
     // });
+    restartBtn.addEventListener("click", () => {
+      quiz.currentQuestionIndex = 0;
+      quiz.correctAnswers = 0;
+  
+      quizView.style.display = "block";
+      endView.style.display = "none";
+  
+      showQuestion();
+    });
   }
 });
