@@ -14,7 +14,7 @@ class Quiz {
   }
 
   moveToNextQuestion() {
-    return this.currentQuestionIndex++;
+    this.currentQuestionIndex++;
   }
 
   shuffleQuestions() {
@@ -47,7 +47,6 @@ class Quiz {
       (sum, q) => sum + q.difficulty,
       0
     );
-    return totalDifficulty / this.questions.length;  
+    return totalDifficulty / this.questions.length;
   }
 }
-

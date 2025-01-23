@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const questionContainer = document.querySelector("#question");
   const choiceContainer = document.querySelector("#choices");
   const nextButton = document.querySelector("#nextButton");
+  const restartBtn = document.getElementById("restartButton");
 
   // End view elements
   const resultContainer = document.querySelector("#result");
@@ -90,6 +91,14 @@ document.addEventListener("DOMContentLoaded", () => {
       showResults();
       return;
     }
+    // else {
+    //   setInterval(() => {
+    //     if (quiz.quizDuration >= 0) {
+    //       quiz.quizDuration--;
+    //       console.log(quiz.quizDuration);
+    //     }
+    //   }, 1000);
+    // }
 
     // Clear the previous question text and question choices
     questionContainer.innerText = "";
@@ -105,19 +114,25 @@ document.addEventListener("DOMContentLoaded", () => {
     // 1. Show the question
     // Update the inner text of the question container element and show the question text
 
-    questions.forEach((question) => {
-      questionContainer.innerText = question.text;
-    });
+    questionContainer.innerText = question.text;
+
+    // console.log(quiz.questions);
+    // console.log(quiz.currentQuestionIndex);
 
     // 2. Update the green progress bar
     // Update the green progress bar (div#progressBar) width so that it shows the percentage of questions answered
 
-    progressBar.style.width = `${100 / questions.length}%`; // This value is hardcoded as a placeholder
+    const progressBarPer =
+      ((quiz.currentQuestionIndex + 1) / quiz.questions.length) * 100;
+
+    progressBar.style.width = `${progressBarPer}%`; // This value is hardcoded as a placeholder
 
     // 3. Update the question count text
     // Update the question count (div#questionCount) show the current question out of total questions
 
-    questionCount.innerText = `Question 1 of ${questions.length}`;
+    questionCount.innerText = `Question ${quiz.currentQuestionIndex + 1} of ${
+      quiz.questions.length
+    }`;
 
     // 4. Create and display new radio input element with a label for each choice.
     // Loop through the current question `choices`.
@@ -145,9 +160,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Hint 3: You can use the `element.appendChild()` method to append an element to the choices container.
     // Hint 4: You can use the `element.innerText` property to set the inner text of an element.
   }
-  
-  const choicesElm = document.querySelectorAll("#question div input")
-  
+
+  const choicesElm = document.querySelectorAll("#question div input");
+
   function nextButtonHandler() {
     let selectedAnswer; // A variable to store the selected answer value
 
@@ -155,26 +170,32 @@ document.addEventListener("DOMContentLoaded", () => {
     //
     // 1. Get all the choice elements. You can use the `document.querySelectorAll()` method.
     const choicesElm = document.querySelectorAll("#question div input");
-    
+    // console.log(choicesElm);
 
     // 2. Loop through all the choice elements and check which one is selected
     // Hint: Radio input elements have a property `.checked` (e.g., `element.checked`).
     //  When a radio input gets selected the `.checked` property will be set to true.
     //  You can use check which choice was selected by checking if the `.checked` property is true.
-    choicesElm.forEach(function(choice){
-      if (choice.checked === true) {selectedAnswer = choice.value};
-      });
-      
-    quiz.checkAnswer(selectedAnswer);
-   
+    choicesElm.forEach(function (choice) {
+      if (choice.checked === true) {
+        selectedAnswer = choice.value;
+      }
+    });
+    // console.log(selectedAnswer);
+    if (selectedAnswer) {
+      quiz.checkAnswer(selectedAnswer);
+      quiz.moveToNextQuestion();
+      showQuestion();
+      // quiz.checkAnswer("Selected Answer", selectedAnswer);
+      // console.log("Correct Answer: ", quiz.correctAnswers);
+    } else {
+      console.log("Answer is not selected!");
+    }
+
     // 3. If an answer is selected (`selectedAnswer`), check if it is correct and move to the next question
     // Check if selected answer is correct by calling the quiz method `checkAnswer()` with the selected answer.
     // Move to the next question by calling the quiz method `moveToNextQuestion()`.
     // Show the next question by calling the function `showQuestion()`.
-    
-    quiz.moveToNextQuestion();
-
-    showQuestion();
   }
 
   function showResults() {
@@ -184,9 +205,35 @@ document.addEventListener("DOMContentLoaded", () => {
     quizView.style.display = "none";
 
     // 2. Show the end view (div#endView)
-    endView.style.display = "flex";
+    endView.style.display = "block";
 
     // 3. Update the result container (div#result) inner text to show the number of correct answers out of total questions
-    resultContainer.innerText = `You scored 1 out of 1 correct answers!`; // This value is hardcoded as a placeholder
+    resultContainer.innerText = `You scored ${quiz.correctAnswers} out of ${quiz.questions.length} correct answers!`; // This value is hardcoded as a placeholder
+
+    // restartBtn.addEventListener("click", function () {
+    //   console.log("Restart Clicked!");
+    //   // console.log(quizView);
+    //   // console.log(endView);
+    //   // showQuestion();
+    //   /*if (quizView.style.display === "none") {
+    //     console.log(quizView);
+    //     console.log(endView);
+    //     endView.attributeStyleMap.delete("display");
+    //     endView.style.display = "none";
+    //     quizView.style.display = "block";*/
+
+    //   const currentDisplay = window.getComputedStyle(quizView).display;
+    //   if (currentDisplay === "none") {
+    //     quizView.style.display = "block";
+    //     endView.style.display = "none";
+
+    //     showQuestion();
+    //   }
+    //   // console.log(quizView);
+    //   // console.log(endView);
+    //   // document.getElementById("endView").classList.toggle("none");
+    //   // document.getElementById("quizView").classList.toggle("none");
+    //   // showQuestion();
+    // });
   }
 });
