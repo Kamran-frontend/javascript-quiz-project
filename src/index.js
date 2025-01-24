@@ -44,9 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
       "E = mc^2",
       3
     ),
-    // Add more questions here
   ];
-  // console.log(questions);
+
   const quizDuration = 120; // 120 seconds (2 minutes)
 
   /************  QUIZ INSTANCE  ************/
@@ -78,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
   /************  EVENT LISTENERS  ************/
 
   nextButton.addEventListener("click", nextButtonHandler);
+  restartBtn.addEventListener("click", restartQuiz);
 
   /************  FUNCTIONS  ************/
 
@@ -91,32 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
       showResults();
       return;
     }
-    // else {
-    //   setInterval(() => {
-    //     if (quiz.quizDuration >= 0) {
-    //       quiz.quizDuration--;
-    //       console.log(quiz.quizDuration);
-    //     }
-    //   }, 1000);
-    // }
-     
-    let timer = setInterval(function(){
-          quiz.timeRemaining--;
-          const minutes = Math.floor(quiz.timeRemaining / 60)
-          .toString()
-          .padStart(2, "0");
-          const seconds = (quiz.timeRemaining % 60).toString().padStart(2, "0");
-          timeRemainingContainer.innerText = `${minutes}:${seconds}`;
 
-         //console.log(quiz.timeRemaining);
-          if (quiz.timeRemaining === 0) {
-          clearInterval(timer);
-          quizView.style.display = "none";
-          endView.style.display = "block";
-        }
-        }, 1000)
-        
-       
     // Clear the previous question text and question choices
     questionContainer.innerText = "";
     choiceContainer.innerHTML = "";
@@ -125,16 +100,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const question = quiz.getQuestion();
     // Shuffle the choices of the current question by calling the method 'shuffleChoices()' on the question object
     question.shuffleChoices();
+    countDownTimer();
 
-    // YOUR CODE HERE:
     //
     // 1. Show the question
     // Update the inner text of the question container element and show the question text
 
     questionContainer.innerText = question.text;
-
-    // console.log(quiz.questions);
-    // console.log(quiz.currentQuestionIndex);
 
     // 2. Update the green progress bar
     // Update the green progress bar (div#progressBar) width so that it shows the percentage of questions answered
@@ -143,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ((quiz.currentQuestionIndex + 1) / quiz.questions.length) * 100;
 
     progressBar.style.width = `${progressBarPer}%`; // This value is hardcoded as a placeholder
+    progressBar.innerText = `${progressBarPer}%`; // added extra functionality :)
 
     // 3. Update the question count text
     // Update the question count (div#questionCount) show the current question out of total questions
@@ -157,8 +130,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (questionContainer.innerText === question.text) {
         let choices = document.createElement("div");
         question.choices.forEach((choice) => {
-          choices.innerHTML += `<input type="radio" name="choice" class="choice" value="${choice}">
-          <label>${choice}</label>
+          choices.innerHTML += `<label><input type="radio" name="choice" class="choice" value="${choice}">
+          ${choice}</label>
         <br>`;
         });
 
@@ -178,16 +151,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // Hint 4: You can use the `element.innerText` property to set the inner text of an element.
   }
 
-  const choicesElm = document.querySelectorAll("#question div input");
-
   function nextButtonHandler() {
     let selectedAnswer; // A variable to store the selected answer value
 
-    // YOUR CODE HERE:
     //
     // 1. Get all the choice elements. You can use the `document.querySelectorAll()` method.
     const choicesElm = document.querySelectorAll("#question div input");
-    // console.log(choicesElm);
 
     // 2. Loop through all the choice elements and check which one is selected
     // Hint: Radio input elements have a property `.checked` (e.g., `element.checked`).
@@ -198,15 +167,14 @@ document.addEventListener("DOMContentLoaded", () => {
         selectedAnswer = choice.value;
       }
     });
-    // console.log(selectedAnswer);
+
     if (selectedAnswer) {
       quiz.checkAnswer(selectedAnswer);
       quiz.moveToNextQuestion();
       showQuestion();
       // quiz.checkAnswer("Selected Answer", selectedAnswer);
-      // console.log("Correct Answer: ", quiz.correctAnswers);
     } else {
-      console.log("Answer is not selected!");
+      alert("Please select an answer!");
     }
 
     // 3. If an answer is selected (`selectedAnswer`), check if it is correct and move to the next question
@@ -216,7 +184,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function showResults() {
-    // YOUR CODE HERE:
     //
     // 1. Hide the quiz view (div#quizView)
     quizView.style.display = "none";
@@ -226,40 +193,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 3. Update the result container (div#result) inner text to show the number of correct answers out of total questions
     resultContainer.innerText = `You scored ${quiz.correctAnswers} out of ${quiz.questions.length} correct answers!`; // This value is hardcoded as a placeholder
+  }
 
-    // restartBtn.addEventListener("click", function () {
-    //   console.log("Restart Clicked!");
-    //   // console.log(quizView);
-    //   // console.log(endView);
-    //   // showQuestion();
-    //   /*if (quizView.style.display === "none") {
-    //     console.log(quizView);
-    //     console.log(endView);
-    //     endView.attributeStyleMap.delete("display");
-    //     endView.style.display = "none";
-    //     quizView.style.display = "block";*/
+  function restartQuiz() {
+    quiz.currentQuestionIndex = 0;
+    quiz.correctAnswers = 0;
+    quiz.timeRemaining = quizDuration;
 
-    //   const currentDisplay = window.getComputedStyle(quizView).display;
-    //   if (currentDisplay === "none") {
-    //     quizView.style.display = "block";
-    //     endView.style.display = "none";
+    quizView.style.display = "block";
+    endView.style.display = "none";
 
-    //     showQuestion();
-    //   }
-    //   // console.log(quizView);
-    //   // console.log(endView);
-    //   // document.getElementById("endView").classList.toggle("none");
-    //   // document.getElementById("quizView").classList.toggle("none");
-    //   // showQuestion();
-    // });
-    restartBtn.addEventListener("click", () => {
-      quiz.currentQuestionIndex = 0;
-      quiz.correctAnswers = 0;
-  
-      quizView.style.display = "block";
-      endView.style.display = "none";
-  
-      showQuestion();
-    });
+    timeRemainingContainer.innerText = `${minutes}:${seconds}`;
+
+    showQuestion();
+  }
+
+  function countDownTimer() {
+    clearInterval(quiz.timer);
+
+    quiz.timer = setInterval(() => {
+      if (quiz.timeRemaining > 0) {
+        quiz.timeRemaining--;
+
+        const minutes = Math.floor(quiz.timeRemaining / 60)
+          .toString()
+          .padStart(2, "0");
+        const seconds = (quiz.timeRemaining % 60).toString().padStart(2, "0");
+        timeRemainingContainer.innerText = `${minutes}:${seconds}`;
+      } else {
+        clearInterval(timer);
+        showResults();
+      }
+    }, 1000);
   }
 });
